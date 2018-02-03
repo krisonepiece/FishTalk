@@ -11,20 +11,17 @@
  * @link http://www.workerman.net/
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 /**
  * 用于检测业务代码死循环或者长时间阻塞等问题
  * 如果发现业务卡死，可以将下面declare打开（去掉//注释），并执行php start.php reload
  * 然后观察一段时间workerman.log看是否有process_timeout异常
  */
 //declare(ticks=1);
-
 /**
  * 聊天主逻辑
  * 主要是处理 onMessage onClose 
  */
 use \GatewayWorker\Lib\Gateway;
-
 class Events
 {
    /**
@@ -150,6 +147,29 @@ class Events
                     'time'=>date('Y-m-d H:i:s'),
                 );
                 return Gateway::sendToGroup($room_id ,json_encode($new_message));
+			case 'require_content':
+				$talk_name = $message_data['to_client']; //account_B
+				$a = array();
+				$_SESSION['client_name'] = "Bob";
+				$_SESSION['talkname_name'] = "ted";
+				$servername = "140.117.169.140";
+				$username = "fishtalk";
+				$password = "fish2018";
+				$dbname = "fishtalk";
+				
+                $conn = new mysqli($servername, $username, $password, $dbname);
+				$sql = 'SELECT * FROM content WHERE (account_A = "'.$_SESSION['client_name'].'" AND account_B = "'.$_SESSION['talkname_name'].'") OR (account_B = "'.$_SESSION['client_name'].'" AND account_A = "'.$_SESSION['talkname_name'].'")  ';
+				$result = $conn->query($sql);
+				while($row = $result->fetch_array())
+				{
+					$rows[] = $row;
+				}
+				$conn->close();
+				$new_message = array('type'=>$message_data['type'], 'client_id'=>$client_id, 'client_name'=>htmlspecialchars($client_name), 'time'=>date('Y-m-d H:i:s'));
+				$new_message['content_entity'] = $a;
+                Gateway::sendToCurrentClient(json_encode($new_message));
+                return;
+				
         }
    }
    
