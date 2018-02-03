@@ -87,18 +87,20 @@ class Events
 				$conn->close();
 				////獲得INTRODUCTION
 				$conn = new mysqli($dbhost, $dbuser, $dbpass, $dbname) or die('Error with MySQL connection');
-				$sql = "SELECT * FROM `member` WHERE account='".$_SESSION['client_name']."' ";//查詢整個表單
-				$result = $conn->query($sql);
-				if ($result->num_rows > 0) {
-				// output data of each row
-				while($row = $result->fetch_assoc()) {
-					$introduction=array('type'=>'get_introduction', 'name'=>$_SESSION['client_name'], 'introduction'=>$row["introduction"]);
+				$sql = "SELECT * FROM `member` ";//查詢整個表單
+			        $result = $conn->query($sql);
+			        if ($result->num_rows > 0) {
+			    // output data of each row
+				$packet = array();
+			        while($row = $result->fetch_assoc()) {
+					$packet[$row["username"]]=$row["introduction"];
+					}
+				} 
+				else {
+				    echo "0 results";
 				}
-				} else {
-					echo "0 results";
-				}
-					//echo $introduction["introduction"];
 				$conn->close();
+				$introduction=array('type'=>'get_introduction', 'message'=>$packet);
 				
 				////
 				//$array[] = $var;
