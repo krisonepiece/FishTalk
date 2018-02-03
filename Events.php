@@ -71,15 +71,15 @@ class Events
 				$password = "fish2018";
 				$dbname = "fishtalk";
                 $conn = new mysqli($servername, $username, $password, $dbname);
-				$sql = "SELECT * FROM matching WHERE account_A = ".$_SESSION['room_id'] ." OR account_B = ".$_SESSION['room_id'] ."";
+				$sql = 'SELECT * FROM matching WHERE account_A = "'.$_SESSION['client_name'].'" OR account_B = "'.$_SESSION['client_name'].'"  ';
 				$result = $conn->query($sql);
 				if ($result->num_rows > 0) {
 					while($row = $result->fetch_assoc()) {
-						if($row["account_A"] = $_SESSION['client_name'])
+						if($row["account_A"] == $_SESSION['client_name'])
 						{
 							array_push($a, $row["account_B"]);
 						}
-						else if($row["account_B"] = $_SESSION['client_name'])
+						else if($row["account_B"] == $_SESSION['client_name'])
 						{
 							array_push($a, $row["account_A"]);
 						}
