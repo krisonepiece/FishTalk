@@ -92,7 +92,6 @@ class Events
 				if ($result->num_rows > 0) {
 				// output data of each row
 				while($row = $result->fetch_assoc()) {
-					echo $row["introduction"];
 					$introduction=array('type'=>'get_introduction', 'name'=>$_SESSION['client_name'], 'introduction'=>$row["introduction"]);
 				}
 				} else {
