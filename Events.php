@@ -115,13 +115,13 @@ class Events
             // 客户端发言 message: {type:say, to_client_id:xx, content:xx}
             case 'say':
                 // 非法请求
+				$talk_name = $message_data['to_client']; //account_B
                 if(!isset($_SESSION['room_id']))
                 {
                     throw new \Exception("\$_SESSION['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
                 }
                 $room_id = $_SESSION['room_id'];
                 $client_name = $_SESSION['client_name'];
-                
                 // 私聊
                 if($message_data['to_client_id'] != 'all')
                 {
@@ -133,6 +133,26 @@ class Events
                         'content'=>"<b>对你说: </b>".nl2br(htmlspecialchars($message_data['content'])),
                         'time'=>date('Y-m-d H:i:s'),
                     );
+					
+					$servername = "140.117.169.140";
+					$username = "fishtalk";
+					$password = "fish2018";
+					$dbname = "fishtalk";
+					$conn = new mysqli($servername, $username, $password, $dbname);
+					if ($conn->connect_error) {
+						die("Connection failed: " . $conn->connect_error);
+					} 
+					$sql = "INSERT INTO content (account_A, account_B, message)
+					VALUES ('client_id', '$talk_name', '$message_data['content']')";
+
+					if ($conn->query($sql) === TRUE) {
+						echo "New record created successfully";
+					} else {
+						echo "Error: " . $sql . "<br>" . $conn->error;
+					}
+
+					$conn->close();
+					
                     Gateway::sendToClient($message_data['to_client_id'], json_encode($new_message));
                     $new_message['content'] = "<b>你对".htmlspecialchars($message_data['to_client_name'])."说: </b>".nl2br(htmlspecialchars($message_data['content']));
                     return Gateway::sendToCurrentClient(json_encode($new_message));
@@ -146,6 +166,26 @@ class Events
                     'content'=>nl2br(htmlspecialchars($message_data['content'])),
                     'time'=>date('Y-m-d H:i:s'),
                 );
+				
+					$servername = "140.117.169.140";
+					$username = "fishtalk";
+					$password = "fish2018";
+					$dbname = "fishtalk";
+					$conn = new mysqli($servername, $username, $password, $dbname);
+					if ($conn->connect_error) {
+						die("Connection failed: " . $conn->connect_error);
+					} 
+					$sql = "INSERT INTO content (account_A, account_B, message)
+					VALUES ('client_id', '$talk_name', '$message_data['content']')";
+
+					if ($conn->query($sql) === TRUE) {
+						echo "New record created successfully";
+					} else {
+						echo "Error: " . $sql . "<br>" . $conn->error;
+					}
+
+					$conn->close();
+				
                 return Gateway::sendToGroup($room_id ,json_encode($new_message));
 			case 'require_content':
 				$talk_name = $message_data['to_client']; //account_B
